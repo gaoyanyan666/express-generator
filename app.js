@@ -7,7 +7,7 @@ const campsiteRouter = require('./routes/campsiteRouter');
 const promotionRouter = require('./routes/promotionRouter');
 const partnerRouter = require('./routes/partnerRouter');
 const mongoose = require('mongoose');
-
+// connect mongoose
 const url = 'mongodb://localhost:27017/nucampsite';
 const connect = mongoose.connect(url, {
     useCreateIndex: true,
@@ -23,7 +23,7 @@ connect.then(() => console.log('Connected correctly to server'),
 connect.then(() => console.log('Connected correctly to server'), 
     err => console.log(err)
 );
-
+//set up express router
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
@@ -37,6 +37,33 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// set up authenticate middleware
+function auth(req, res, next) {
+  console.log(req.headers);
+  const authHeader = req.headers.authorization;
+  if(!authHeader) {
+    const err = new Error('You are not authentication!');
+    res.setHeader('www-Authenticate', 'Basic');
+    err.status =401;
+    return next(err);
+  }
+  const auth = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
+  const user = auth[0];
+  const pass = auth[1];
+  if(user === 'admin'&& pass=== 'password'){
+    return next();//authorized
+  }else{
+    const err= new Error('You are authenticated!');
+    res.setHeader('www-Authenticate', 'Basic');
+    err.status =401;
+    return next(err);
+  }
+
+}
+//register on express
+app.use(auth);
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/campsites', campsiteRouter);
 app.use('/promotions', promotionRouter);
