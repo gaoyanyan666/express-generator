@@ -5,6 +5,8 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const session = require('express-session');
 const FileStore = require('session-file-store')(session);
+const passport = require('passport');
+const authenticate = require('./authenticate');
 
 //set up express router
 var indexRouter = require('./routes/index');
@@ -52,28 +54,30 @@ app.use(session({
   resave: false,
   store: new FileStore()
 }));
+
+//middleware function initialize and session to check if there is user
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
 //let the user to access to the home page before registered
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 // set up authenticate middleware
 
 function auth(req, res, next) {
-  console.log(req.session);
-
-  if (!req.session.user) {
+  console.log(req.user);
+  if (!req.user) {
       const err = new Error('You are not authenticated!');
       err.status = 401;
       return next(err);
   } else {
-      if (req.session.user === 'authenticated') {
-          return next();
-      } else {
-          const err = new Error('You are not authenticated!');
-          err.status = 401;
+    //pass the client to the next middleware
           return next(err);
       }
   }
-}
+
 
 //register on express
 app.use(auth);
