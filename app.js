@@ -1,12 +1,10 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-const session = require('express-session');
-const FileStore = require('session-file-store')(session);
 const passport = require('passport');
-const authenticate = require('./authenticate');
+const config = require('./config');
+
 
 //set up express router
 var indexRouter = require('./routes/index');
@@ -19,7 +17,7 @@ const partnerRouter = require('./routes/partnerRouter');
 const mongoose = require('mongoose');
 
 // connect mongoose
-const url = 'mongodb://localhost:27017/nucampsite';
+const url = config.mongoUrl;
 const connect = mongoose.connect(url, {
     useCreateIndex: true,
     useFindAndModify: false,
@@ -47,17 +45,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 //app.use(cookieParser('12345-67890-09876-54321'));
 
-app.use(session({
-  name: 'session-id',
-  secret: '12345-67890-09876-54321',
-  saveUninitialized: false,
-  resave: false,
-  store: new FileStore()
-}));
+
 
 //middleware function initialize and session to check if there is user
 app.use(passport.initialize());
-app.use(passport.session());
+
 
 
 
@@ -66,47 +58,13 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 // set up authenticate middleware
 
-function auth(req, res, next) {
-  console.log(req.user);
-  if (!req.user) {
-      const err = new Error('You are not authenticated!');
-      err.status = 401;
-      return next(err);
-  } else {
-    //pass the client to the next middleware
-          return next(err);
-      }
-  }
 
-
-//register on express
-app.use(auth);
 
 app.use(express.static(path.join(__dirname, 'public')));
+
 app.use('/campsites', campsiteRouter);
 app.use('/promotions', promotionRouter);
 app.use('/partners', partnerRouter);
-// app.use('/locations', locationRouter);
-
-
-
-
-function auth(req, res, next) {
-  console.log('req.session');
-  if(!req.session.user){
-    const error = new Error('You are not authenticated!');
-    err.status = 401;
-    return next(err);
-  }else{
-    if(req.session.user === 'authenticated'){
-      return next();
-    }else{
-      const err = new Error('You are not authenticated!');
-      err.status = 401;
-      return next(err);
-    }
-  }
-}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
