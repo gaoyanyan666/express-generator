@@ -4,6 +4,14 @@ const Schema = mongoose.Schema;
 
 
 const userSchema = new Schema({
+    firstname:{
+        type:String,
+        default:''
+    },
+    lastname:{
+        type:String,
+        default:''
+    },
     admin: {
         type: Boolean,
         default: false
@@ -11,7 +19,7 @@ const userSchema = new Schema({
 });
 
 
-//set up the passportLocalMongoose module with user schema
+//set up the passportLocalMongoose module with user schema给UserSchema添加了一个插件，使得User的Model拥有了一些有关验证和加密的方法。
 userSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model('User', userSchema);

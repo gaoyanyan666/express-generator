@@ -48,7 +48,7 @@ app.use(express.urlencoded({ extended: false }));
 
 
 //middleware function initialize and session to check if there is user
-app.use(passport.initialize());
+app.use(passport.initialize());//passport初始化
 
 
 
