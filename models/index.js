@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 const Campsite = require('./models/campsite');
 const Promotion = require('./models/promotions');
 const Partner = require('./models/partners');
 
+
 const url = 'mongodb://localhost:27017/nucampsite';
 const connect = mongoose.connect(url, {
+    useMongoClient: true,
     useCreateIndex: true,
     useNewUrlParser: true,
     useUnifiedTopology: true
