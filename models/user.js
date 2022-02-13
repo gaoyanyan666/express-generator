@@ -15,11 +15,14 @@ const userSchema = new Schema({
     admin: {
         type: Boolean,
         default: false
-    }
+    },
+    facebookId: String,
+    
 });
 
 
-//set up the passportLocalMongoose module with user schema给UserSchema添加了一个插件，使得User的Model拥有了一些有关验证和加密的方法。
+//set up the passportLocalMongoose module with user schema
+//给UserSchema添加了一个插件，使得User的Model拥有了一些有关验证和加密的方法。
 userSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model('User', userSchema);

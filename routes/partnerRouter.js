@@ -6,7 +6,7 @@ const cors =require('./cors');
 const partnerRouter = express.Router();
 
 partnerRouter.route('/')
-.options(cors.corsWithOptions, (req, res) => res.sendStatus(200))//preflight request to check 
+.options(cors.corsWithOptions, (req, res) => res.sendStatus(200))//preflight request to check URL 包含哪些方法
 .get(cors.cors,(req, res, next) => {
     Partner.find()
     .then((partner) => {
